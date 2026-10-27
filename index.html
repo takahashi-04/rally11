@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#071322">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<title>RALLY 11 — Table Tennis</title>
+<style>
+:root {color-scheme:dark; --ink:#eefaff;--muted:#7f9aaa;--teal:#35e0ca;--coral:#ff806f;--gold:#ffda86;--bg:#071321;--line:rgba(134,181,207,.17);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+* {box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);overscroll-behavior:none}
+body{background:radial-gradient(ellipse at 50% 25%,#15324c 0%,#071321 55%,#040c16 100%)}
+button{font:inherit;cursor:pointer;border:0;color:inherit;touch-action:manipulation}
+button:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.app{max-width:760px;margin:auto;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 8px) 13px calc(env(safe-area-inset-bottom) + 10px);gap:8px;position:relative}
+.topbar{height:36px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding:0 4px}
+.logo{font-size:16px;font-weight:1000;letter-spacing:.16em;white-space:nowrap}.logo b{color:var(--teal)}.logo span{font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.16em;margin-left:9px}
+.iconBtns{display:flex;gap:8px}.iconBtn{width:37px;height:34px;border:1px solid var(--line);background:#10263a;border-radius:11px;font-size:16px;display:grid;place-items:center}.iconBtn:active{transform:scale(.95)}
+.scorebar{display:grid;grid-template-columns:1fr 56px 1fr;align-items:center;gap:9px;flex-shrink:0}
+.scoreCard{background:linear-gradient(125deg,rgba(26,57,78,.94),rgba(13,32,49,.93));border:1px solid var(--line);border-radius:17px;display:flex;align-items:center;justify-content:space-between;padding:10px 13px;min-height:78px;gap:8px;box-shadow:0 8px 22px #0002}
+.scoreCard.you{border-bottom:2px solid var(--teal)}.scoreCard.cpu{border-bottom:2px solid var(--coral)}
+.playerName{font-size:10px;font-weight:800;letter-spacing:.19em;color:var(--muted);margin-bottom:3px}
+.scoreCard.you .playerName{color:var(--teal)}.scoreCard.cpu .playerName{color:var(--coral)}
+.points{font-size:41px;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.055em;font-weight:900}
+.setDots{display:flex;gap:5px;margin-top:7px;min-height:7px}.setDots i{display:block;width:18px;height:5px;border-radius:10px;background:#375268}.setDots i.active.you{background:var(--teal)}.setDots i.active.cpu{background:var(--coral)}
+.middleScore{text-align:center}.middleScore strong{display:block;font-size:12px;letter-spacing:.12em;color:var(--gold)}.middleScore small{font-size:9px;color:var(--muted);letter-spacing:.10em;font-weight:800}
+.stage{flex:1;min-height:210px;position:relative;border-radius:20px;overflow:hidden;border:1px solid rgba(140,191,216,.14);background:#071321;isolation:isolate;box-shadow:0 18px 65px #0005}
+#court{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block;cursor:crosshair}
+.stageTop{position:absolute;top:13px;left:15px;right:15px;display:flex;justify-content:space-between;pointer-events:none;align-items:flex-start;z-index:2}
+.modePill,.rallyPill{font-size:10px;font-weight:800;letter-spacing:.12em;background:#071321ba;border:1px solid #56809555;border-radius:100px;padding:8px 11px;backdrop-filter:blur(12px)}.rallyPill b{color:var(--gold);font-size:12px}
+.hint{position:absolute;bottom:16px;left:12px;right:12px;text-align:center;pointer-events:none;color:#d5e8f6b6;font-size:11px;font-weight:750;letter-spacing:.025em;text-shadow:0 2px 7px #000;z-index:1}
+.banner{position:absolute;top:20%;left:50%;transform:translateX(-50%);pointer-events:none;text-align:center;z-index:3;width:92%;font-size:26px;font-weight:950;letter-spacing:.06em;color:#fff;text-shadow:0 3px 24px #000;transition:opacity .2s}.banner small{display:block;font-size:12px;color:#b6d2e3;font-weight:700;letter-spacing:.05em;margin-top:6px}.banner.hidden{opacity:0}
+.controls{display:flex;align-items:stretch;gap:9px;flex-shrink:0;min-height:68px}
+.shotBtn{flex:1;border:1px solid rgba(147,185,214,.18);background:#0e2638;border-radius:14px;padding:9px 10px;display:flex;gap:9px;align-items:center;text-align:left;transition:all .15s}.shotBtn.selected{background:linear-gradient(130deg,#164c58,#0e3346);border-color:#35e0ca8c;box-shadow:inset 0 0 0 1px #35e0ca26}.shotBtn.cut.selected{background:linear-gradient(130deg,#5b3549,#382d4e);border-color:#ffb2a077}.shotIcon{font-size:20px}.shotText strong{font-size:12px;display:block}.shotText small{display:block;color:#91abbc;font-size:10px;margin-top:3px}.spinBadge{align-self:center;font-size:9px;color:var(--gold);font-weight:900;letter-spacing:.08em;padding-left:3px}
+.footer{color:#547283;font-size:9px;font-weight:750;letter-spacing:.09em;text-align:center;height:11px;line-height:11px;flex-shrink:0}
+.overlay{position:absolute;inset:0;background:linear-gradient(180deg,#04101ad9,#061a29ed);z-index:10;display:flex;justify-content:center;align-items:flex-start;padding:22px;backdrop-filter:blur(9px);overflow:auto}.overlay[hidden]{display:none}
+.modal{margin:auto;width:min(100%,390px);border:1px solid #4c7f9950;border-radius:25px;padding:24px 21px;background:linear-gradient(145deg,#102c40,#091b2d);box-shadow:0 30px 80px #000b;text-align:center}
+.trophy{width:69px;height:69px;margin:0 auto 12px;border-radius:20px;display:grid;place-items:center;font-size:35px;background:#183e51;border:1px solid #53a69a52;box-shadow:0 0 35px #18bba41a}
+.eyebrow{font-size:11px;letter-spacing:.28em;font-weight:900;color:var(--teal);margin:8px 0}
+.modal h1{font-size:37px;line-height:1.04;letter-spacing:-.05em;margin:7px 0 10px;font-weight:950}.modal h1 em{color:var(--teal);font-style:normal}
+.modal p{font-size:12px;line-height:1.85;color:#9db9ca;margin:0 0 16px}
+.segment{display:flex;gap:7px;margin:10px 0 15px;text-align:center}.diff{flex:1;padding:12px 5px;font-size:11px;font-weight:850;border-radius:11px;background:#163246;color:#8eafc1;border:1px solid #45657766}.diff.active{color:#021b24;background:var(--teal);border-color:var(--teal)}
+.primary{width:100%;background:linear-gradient(100deg,#38dfca,#9cf2de);color:#033035;border-radius:13px;padding:15px;font-size:14px;font-weight:950;letter-spacing:.04em;box-shadow:0 6px 27px #1fe1c129}.primary:active{transform:scale(.98)}
+.secondary{margin-top:10px;background:transparent;border:1px solid #547487;color:#c6dee8;border-radius:12px;padding:11px 15px;width:100%;font-size:12px;font-weight:800}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;text-align:left}.rule{background:#ffffff08;border-radius:9px;padding:10px;font-size:10px;color:#9bbccc;line-height:1.5}.rule strong{color:#d8f5f4;display:block;margin-bottom:3px;font-size:11px}
+.resultStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.resultStats div{background:#153448;border-radius:10px;padding:12px}.resultStats strong{font-size:21px;display:block;color:var(--gold)}.resultStats small{font-size:10px;color:#9db5c4}
+@media(max-height:680px){.app{gap:5px;padding-top:calc(env(safe-area-inset-top) + 4px);padding-bottom:calc(env(safe-area-inset-bottom) + 4px)}.topbar{height:26px}.scoreCard{min-height:59px;padding:7px 10px}.points{font-size:31px}.controls{min-height:52px}.shotBtn{padding:5px 8px}.footer{display:none}.modal{padding:16px}.modal h1{font-size:30px}.modal p{line-height:1.45}}
+@media(min-width:560px){.app{max-width:540px}.stage{min-height:270px}}
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <header class="topbar"><div class="logo">RALLY<b>11</b><span>TABLE TENNIS</span></div><div class="iconBtns"><button type="button" class="iconBtn" id="soundBtn" aria-label="音のオンオフ">♪</button><button type="button" class="iconBtn" id="pauseBtn" aria-label="一時停止">Ⅱ</button></div></header>
+  <section class="scorebar" aria-label="スコア"><div class="scoreCard you"><div><div class="playerName">YOU</div><div class="setDots" id="yourSets"><i></i><i></i></div></div><div class="points" id="yourScore">0</div></div><div class="middleScore"><strong id="gameNum">GAME 1</strong><small id="serveLabel">11 POINTS</small></div><div class="scoreCard cpu"><div class="points" id="cpuScore">0</div><div><div class="playerName">CPU</div><div class="setDots" id="cpuSets"><i></i><i></i></div></div></div></section>
+  <section class="stage" aria-label="卓球コート"><canvas id="court"></canvas><div class="stageTop"><div class="modePill" id="difficultyPill">LEVEL / NORMAL</div><div class="rallyPill">RALLY <b id="rallyCount">0</b></div></div><div class="banner hidden" id="banner"></div><div class="hint" id="hint">指でラケットを動かしてボールを打ち返そう</div></section>
+  <div class="controls"><button type="button" class="shotBtn selected" id="driveBtn" aria-pressed="true"><span class="shotIcon">↗</span><span class="shotText"><strong>ドライブ</strong><small>速い攻撃球</small></span><span class="spinBadge">FAST</span></button><button type="button" class="shotBtn cut" id="cutBtn" aria-pressed="false"><span class="shotIcon">↘</span><span class="shotText"><strong>カット</strong><small>変化する守備球</small></span><span class="spinBadge">SPIN</span></button></div>
+  <div class="footer">DRAG TO MOVE · SWIPE TO AIM · FIRST TO 11 / BEST OF 3</div>
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
+</main>
+<script>
+'use strict';
+(()=>{
+const $=id=>document.getElementById(id), cvs=$('court'), ctx=cvs.getContext('2d'), overlay=$('overlay'), modal=$('modal');
+const scoreYou=$('yourScore'),scoreCpu=$('cpuScore'),gameNum=$('gameNum'),serveLabel=$('serveLabel'),banner=$('banner'),hint=$('hint');
+const TAU=Math.PI*2,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),mix=(a,b,t)=>a+(b-a)*t,rand=(a,b)=>a+Math.random()*(b-a);
+const levels={easy:{name:'EASY',cpuSpeed:.82,accuracy:.42,returnDur:1.70,reach:.24,aim:.66},normal:{name:'NORMAL',cpuSpeed:1.23,accuracy:.22,returnDur:1.45,reach:.26,aim:.83},hard:{name:'PRO',cpuSpeed:2.05,accuracy:.08,returnDur:1.23,reach:.28,aim:.94}};
+let difficulty='normal',settings=levels.normal,W=390,H=530,dpr=1,gameState='menu',wasPaused='ready',points={you:0,cpu:0},sets={you:0,cpu:0},gameIndex=1,serve='you',rally=0,best=0,totalHits=0,shotKind='drive',muted=false,audio=null,shot=null,ball={x:0,z:.9,y:.18},trail=[],particles=[],aiX=0,playerX=0,targetPlayerX=0,playerVel=0,prevPlayerX=0,pointerDown=false,keyDir=0,pointTime=0,pointMessage='',pointSub='',elapsed=0,aiServeTimer=0,last=0,glowPulse=0;
+try{best=Number(localStorage.getItem('rally11_best')||0)}catch{}
+function sound(freq=300,dur=.05,type='sine',gain=.07){if(muted)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;audio=audio||new C();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,audio.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(50,freq*.62),audio.currentTime+dur);g.gain.setValueAtTime(gain,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+dur);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+dur)}catch{}}
+function resize(){const b=cvs.getBoundingClientRect();W=Math.max(1,b.width);H=Math.max(1,b.height);dpr=Math.min(2,window.devicePixelRatio||1);cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
+window.addEventListener('resize',resize);
+const scoreText=()=>{scoreYou.textContent=points.you;scoreCpu.textContent=points.cpu;gameNum.textContent=`GAME ${gameIndex}`;serveLabel.textContent=serve==='you'?'● YOU SERVE':'● CPU SERVE';$('rallyCount').textContent=rally;for(const [elName,n,color] of [['yourSets',sets.you,'you'],['cpuSets',sets.cpu,'cpu']]){$(elName).querySelectorAll('i').forEach((el,i)=>{el.className=i<n?'active '+color:''})}};
+function getServer(){const total=points.you+points.cpu;const change=points.you>=10&&points.cpu>=10?total-20+10:Math.floor(total/2);return (Math.max(0,change)+gameIndex-1)%2===0?'you':'cpu'}
+function showBanner(t,sub=''){banner.innerHTML='';banner.textContent=t;if(sub){const s=document.createElement('small');s.textContent=sub;banner.append(s)}banner.classList.remove('hidden')}
+function hideBanner(){banner.classList.add('hidden')}
+function showMenu(title='READY TO RALLY',ended=false){gameState=ended?'gameover':'menu';overlay.hidden=false;$('pauseBtn').textContent='Ⅱ';const text=ended?'もう一度、卓球勝負をしよう。':'指でラケットをスライド。コースを狙ってCPUと対戦！';modal.innerHTML=`<div class="trophy">🏓</div><div class="eyebrow">TABLE TENNIS CHALLENGE</div><h1>${ended?(sets.you>sets.cpu?'YOU <em>WIN!</em>':'TRY <em>AGAIN!</em>'):'RALLY <em>11</em>'}</h1><p>${text}</p>${ended?`<div class="resultStats"><div><strong>${sets.you} - ${sets.cpu}</strong><small>獲得ゲーム</small></div><div><strong>${best}</strong><small>ベストラリー</small></div></div>`:''}<div class="rules"><div class="rule"><strong>👆 スライド操作</strong>指を左右に動かし、ラケットをボールに合わせる</div><div class="rule"><strong>🎯 コースを狙う</strong>打つ瞬間の横スワイプで返球方向が変わる</div><div class="rule"><strong>⚡ ドライブ</strong>速い攻撃球でCPUを揺さぶる</div><div class="rule"><strong>🌀 カット</strong>緩急で相手のタイミングを崩す</div></div><div class="eyebrow" style="text-align:left;color:#abc5d5;letter-spacing:.09em">CPUの強さ</div><div class="segment"><button class="diff ${difficulty==='easy'?'active':''}" data-diff="easy">やさしい</button><button class="diff ${difficulty==='normal'?'active':''}" data-diff="normal">ふつう</button><button class="diff ${difficulty==='hard'?'active':''}" data-diff="hard">プロ</button></div><button class="primary" id="startMatch">${ended?'もう一度対戦':'試合をはじめる'}　→</button><p style="font-size:10px;margin:12px 0 0">11点先取（2点差）・3ゲームマッチ</p>`;
+modal.querySelectorAll('[data-diff]').forEach(b=>b.addEventListener('click',()=>{difficulty=b.dataset.diff;settings=levels[difficulty];modal.querySelectorAll('.diff').forEach(x=>x.classList.toggle('active',x===b))}));$('startMatch').addEventListener('click',startMatch);$('difficultyPill').textContent='LEVEL / '+settings.name;}
+function startMatch(){points={you:0,cpu:0};sets={you:0,cpu:0};gameIndex=1;totalHits=0;playerX=0;targetPlayerX=0;aiX=0;shot=null;trail=[];overlay.hidden=true;settings=levels[difficulty];$('difficultyPill').textContent='LEVEL / '+settings.name;setupServe();sound(720,.08,'triangle')}
+function setupServe(){rally=0;serve=getServer();shot=null;trail.length=0;ball={x:serve==='you'?playerX:aiX,z:serve==='you'?.91:-.91,y:.24};gameState='ready';aiServeTimer=0;scoreText();if(serve==='you'){showBanner('YOUR SERVE','コートをタップしてサーブ');hint.textContent='左右にドラッグして移動、タップでサーブ'}else{showBanner('CPU SERVE','ボールの落下点にラケットを合わせよう');hint.textContent='指を左右にドラッグしてラケットを動かそう'} }
+function launch(from,startX,spin='drive'){const to=from==='you'?'cpu':'you',cfg=settings,speed=from==='you'?(spin==='drive'?1.13:1.42):cfg.returnDur;const minDur=from==='you'?.89:(difficulty==='hard'?1.02:1.17);const dur=Math.max(minDur,speed-Math.min(rally,16)*.019);let landing;if(from==='you'){
+const swipe=clamp(playerVel*0.26,-.62,.62);const anti=clamp(-aiX*.73,-.7,.7);landing=clamp(anti+swipe*1.0+rand(-.10,.10),-.93,.93);
+}else{
+const amount=settings.aim;let side=Math.random()<.5?-1:1;const towardOpen=playerX>.2?-1:playerX<-.2?1:side;if(Math.random()<.63)side=towardOpen;landing=clamp(side*rand(.36,amount)+rand(-.13,.13),-.95,.95);
+}
+shot={from,to,startX,landing,t:0,dur,spin,curve:from==='cpu'?rand(-.095,.095):(spin==='cut'?rand(-.15,.15):rand(-.055,.055)),fromZ:from==='you'?.91:-.91,toZ:from==='you'?-.91:.91};hideBanner();gameState='rally';rally++;totalHits++;scoreText();sound(from==='you'?420:285,.06,'triangle',.12);hint.textContent=from==='you'?'相手の返球を予測しよう！':'ボールのコースにラケットを合わせよう！'}
+function ballPos(s){if(!s)return ball;const t=clamp(s.t,0,1),b=.75,u=t/b;const z=mix(s.fromZ,s.toZ,t);const x=clamp(mix(s.startX,s.landing,t)+Math.sin(t*Math.PI)*s.curve,-1,1);let y;if(t<=b){y=.19*(1-u)+.56*4*u*(1-u)}else{const v=(t-b)/(1-b);y=.19*v+.14*Math.sin(Math.PI*v)}return{x,z,y}}
+function finishShot(){if(!shot)return;const s=shot;shot=null;ball={x:s.landing,z:s.toZ,y:.18};if(s.to==='you'){
+ const miss=Math.abs(playerX-s.landing);const reach=difficulty==='easy'?.38:.315;
+ if(miss>reach){award('cpu',miss>.48?'届かなかった！':'惜しい！');return}
+ makeBurst(ball,'#42e2cf',12);launch('you',s.landing,shotKind);
+ }else{
+ const dist=Math.abs(aiX-s.landing);if(dist>settings.reach){award('you','ナイスショット！');return}
+ makeBurst(ball,'#ff8878',10);launch('cpu',s.landing,Math.random()<.23?'cut':'drive');
+ }}
+function award(who,reason){points[who]++;if(rally-1>best){best=rally-1;try{localStorage.setItem('rally11_best',String(best))}catch{}}sound(who==='you'?880:170,.22,who==='you'?'triangle':'sawtooth',.11);makeBurst(ball,who==='you'?'#40efc9':'#ff8672',26);let gameWon=(points[who]>=11 && points[who]-points[who==='you'?'cpu':'you']>=2);if(gameWon){sets[who]++;if(sets[who]===2){scoreText();showMenu('',true);return}pointMessage=who==='you'?'GAME POINT!':'CPU GAME!';pointSub=`第${gameIndex}ゲーム終了 / ${points.you} - ${points.cpu}`;gameIndex++;points={you:0,cpu:0}}else{pointMessage=who==='you'?'POINT!':'CPU POINT';pointSub=reason}
+gameState='point';pointTime=0;showBanner(pointMessage,pointSub);scoreText();hint.textContent='次のサーブを準備中…'}
+function movePaddle(dt){const old=playerX;if(keyDir!==0)targetPlayerX=clamp(targetPlayerX+keyDir*dt*1.65,-.96,.96);playerX=mix(playerX,targetPlayerX,Math.min(1,dt*18));playerVel=mix(playerVel,(playerX-old)/Math.max(dt,.001),Math.min(1,dt*9));if(!shot){ball.x=serve==='you'?playerX:aiX;ball.z=serve==='you'?.91:-.91;ball.y=.24+Math.sin(elapsed*3.8)*.034}}
+function simulate(dt){elapsed+=dt;glowPulse+=dt;movePaddle(dt);if(gameState==='ready'&&serve==='cpu'){aiServeTimer+=dt;if(aiServeTimer>1.25)launch('cpu',aiX)}
+if(gameState==='point'){pointTime+=dt;if(pointTime>1.55)setupServe()}
+if(gameState==='rally'&&shot){shot.t+=dt/shot.dur;ball=ballPos(shot);if(shot.to==='cpu'){const predict=clamp(shot.landing+Math.sin(shot.t*7.1)*settings.accuracy*.18+shot.curve*.18,-.97,.97);if(shot.t>.11){const trueGuess=clamp(predict+Math.sin((rally+1)*17.5)*settings.accuracy*.5,-.98,.98);aiX+=clamp(trueGuess-aiX,-settings.cpuSpeed*dt,settings.cpuSpeed*dt)}}if(shot.t>=1)finishShot();else{trail.unshift({x:ball.x,z:ball.z,y:ball.y,life:.20});if(trail.length>11)trail.pop()}}
+for(const t of trail)t.life-=dt;trail=trail.filter(t=>t.life>0);for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=18*dt;p.life-=dt}particles=particles.filter(p=>p.life>0)}
+function makeBurst(b,color,n){const c=project(b.x,b.z,b.y);for(let i=0;i<n;i++){const a=rand(0,TAU),speed=rand(35,190);particles.push({x:c.x,y:c.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:rand(.25,.62),max:.62,r:rand(1.3,3.6),color})}}
+function project(x,z,y=0){const t=(z+1)/2;const half=mix(W*.23,W*.43,t);return{x:W/2+x*half,y:mix(H*.285,H*.795,t)-y*H*(.29+.09*t),scale:mix(.66,1.32,t)}}
+function polygon(points,color,stroke=null,width=1){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);ctx.closePath();ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}
+function line(a,b,color,width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
+function roundRect(x,y,w,h,r,color){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=color;ctx.fill()}
+function drawBackground(){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#07131f');g.addColorStop(.53,'#122a3a');g.addColorStop(1,'#06101b');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+const halo=ctx.createRadialGradient(W*.5,H*.48,0,W*.5,H*.45,W*.56);halo.addColorStop(0,'#26a6a318');halo.addColorStop(1,'#26a6a300');ctx.fillStyle=halo;ctx.fillRect(0,0,W,H);
+// ambient scoreboard-style lines and audience lights
+for(let i=0;i<11;i++){let y=H*(.17+i*.032);line({x:0,y},{x:W,y},`rgba(118,186,204,${.017+i*.001})`,1)}
+for(let i=0;i<32;i++){const px=(i*.61803398875%1)*W,py=H*(.12+(i*.113%1)*.20);ctx.fillStyle=i%5===0?'#c2f8e633':'#9fdbea1c';ctx.beginPath();ctx.arc(px,py,i%7===0?1.9:.9,0,TAU);ctx.fill()}
+// arena floor
+const floor=ctx.createLinearGradient(0,H*.56,0,H);floor.addColorStop(0,'#14313b22');floor.addColorStop(1,'#0a1c2d');ctx.fillStyle=floor;ctx.fillRect(0,H*.57,W,H*.43);
+ctx.strokeStyle='#4b789b0e';for(let i=0;i<13;i++){const yy=H*(.69+i*i/13/13*.31);line({x:0,y:yy},{x:W,y:yy},'#9bcce508',1)} }
+function drawTable(){const fl=project(-1,-1),fr=project(1,-1),nl=project(-1,1),nr=project(1,1),midL=project(-1,0),midR=project(1,0);let nearLeft={x:nl.x,y:nl.y+11},nearRight={x:nr.x,y:nr.y+11};
+ // shadow
+ ctx.shadowColor='#000b';ctx.shadowBlur=25;ctx.shadowOffsetY=13;polygon([fl,fr,nr,nl],'#123544');ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+ polygon([nl,nr,nearRight,nearLeft],'#08394a','#2a6c78',1.3);
+ const tableGrad=ctx.createLinearGradient(0,fl.y,0,nl.y);tableGrad.addColorStop(0,'#246e76');tableGrad.addColorStop(.53,'#105061');tableGrad.addColorStop(1,'#0c384f');polygon([fl,fr,nr,nl],tableGrad,'#a8eaf77a',1.7);
+ // half court deep color
+ polygon([fl,fr,midR,midL],'#3c97901a');
+ line(fl,nl,'#d8f9ffbf',1.9);line(fr,nr,'#d8f9ffbf',1.9);line(fl,fr,'#e0faffc0',2);line(nl,nr,'#e0faffdc',2.2);
+ line(project(0,-1),project(0,1),'#d9f4f562',1.4);
+ // under-table legs
+ line({x:mix(nl.x,nr.x,.14),y:nl.y+7},{x:mix(nl.x,nr.x,.18),y:H*.92},'#2d5563',7);line({x:mix(nl.x,nr.x,.87),y:nl.y+7},{x:mix(nl.x,nr.x,.83),y:H*.92},'#2d5563',7);
+ // net shadow
+ line({x:midL.x,y:midL.y+4},{x:midR.x,y:midR.y+4},'#061b27b0',5);
+ // net mesh
+ const netHeight=Math.max(12,H*.027);polygon([{x:midL.x-3,y:midL.y-netHeight},{x:midR.x+3,y:midR.y-netHeight},{x:midR.x+3,y:midR.y},{x:midL.x-3,y:midL.y}],'#e4f8ff47','#f0fbffcc',1.2);
+ for(let i=1;i<14;i++){let x=mix(midL.x,midR.x,i/14);line({x,y:midL.y-netHeight},{x,y:midL.y},'#dbfaff4b',.5)}for(let i=1;i<3;i++)line({x:midL.x,y:midL.y-netHeight*i/3},{x:midR.x,y:midR.y-netHeight*i/3},'#e2ffff54',.6);
+ roundRect(midL.x-3,midL.y-netHeight-4,5,netHeight+9,2,'#f6ffff');roundRect(midR.x-2,midR.y-netHeight-4,5,netHeight+9,2,'#f6ffff');
+ // net band
+ line({x:midL.x-3,y:midL.y-netHeight},{x:midR.x+3,y:midR.y-netHeight},'#e4faff',2);
+}
+function drawPaddle(x,from){const near=from==='you',z=near?.92:-.92,p=project(x,z,.18),r=near?W*.055:W*.035;const ry=r*.84;
+ ctx.save();ctx.translate(p.x,p.y);ctx.rotate(near?-.18:.17);
+ ctx.shadowColor='#0008';ctx.shadowBlur=13;ctx.shadowOffsetY=9;
+ roundRect(-r*.21,ry*.42,r*.42,ry*.99,4,near?'#c49c7c':'#be8f67');ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+ ctx.beginPath();ctx.ellipse(0,-ry*.3,r,ry,0,0,TAU);ctx.fillStyle='#081e2b';ctx.fill();ctx.lineWidth=3;ctx.strokeStyle=near?'#42ffe0':'#ffb3a0';ctx.stroke();
+ const gr=ctx.createRadialGradient(-r*.3,-ry*.65,1,0,-ry*.2,r*1.3);if(near){gr.addColorStop(0,'#85fff0');gr.addColorStop(.8,'#0fc1b2');gr.addColorStop(1,'#0a7a87')}else{gr.addColorStop(0,'#ffba96');gr.addColorStop(.8,'#ff5c68');gr.addColorStop(1,'#a83b56')}
+ ctx.beginPath();ctx.ellipse(0,-ry*.3,r*.81,ry*.82,0,0,TAU);ctx.fillStyle=gr;ctx.fill();
+ ctx.strokeStyle='#ffffff36';ctx.lineWidth=.8;ctx.beginPath();ctx.ellipse(-r*.18,-ry*.52,r*.45,ry*.43,-.5,3.25,5.7);ctx.stroke();ctx.restore()}
+function drawBall(){if(gameState==='menu'||gameState==='gameover')return;const p=project(ball.x,ball.z,ball.y),shadow=project(ball.x,ball.z,0),r=5.5*p.scale;
+ ctx.fillStyle='#00182455';ctx.beginPath();ctx.ellipse(shadow.x,shadow.y+2,r*1.6,r*.42,0,0,TAU);ctx.fill();
+ for(let i=trail.length-1;i>=0;i--){let t=trail[i];let c=project(t.x,t.z,t.y);const k=t.life/.2;ctx.beginPath();ctx.arc(c.x,c.y,Math.max(1,r*k*.8),0,TAU);ctx.fillStyle=`rgba(255,209,116,${.11*k})`;ctx.fill()}
+ const aura=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*3.5);aura.addColorStop(0,'#ffc6626e');aura.addColorStop(1,'#ffc66200');ctx.fillStyle=aura;ctx.beginPath();ctx.arc(p.x,p.y,r*3.5,0,TAU);ctx.fill();
+ const g=ctx.createRadialGradient(p.x-r*.28,p.y-r*.4,r*.2,p.x,p.y,r);g.addColorStop(0,'#fffdf1');g.addColorStop(.45,'#ffe6a3');g.addColorStop(1,'#f59c46');ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,r,0,TAU);ctx.fill();ctx.strokeStyle='#fff8da77';ctx.lineWidth=.6;ctx.stroke()}
+function drawReticle(){if(!shot||shot.to!=='you')return;const p=project(shot.landing,.52,0),alpha=.24+.18*Math.sin(elapsed*8);ctx.strokeStyle=`rgba(255,219,130,${alpha})`;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(p.x,p.y,16,6,0,0,TAU);ctx.stroke();ctx.beginPath();ctx.ellipse(p.x,p.y,6,2.5,0,0,TAU);ctx.stroke()}
+function drawScene(){ctx.clearRect(0,0,W,H);drawBackground();drawTable();drawReticle();drawPaddle(aiX,'cpu');drawPaddle(playerX,'you');drawBall();for(const p of particles){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,TAU);ctx.fill()}ctx.globalAlpha=1;
+ if(gameState==='ready'&&serve==='you'){const p=project(playerX,.91,.19);ctx.strokeStyle=`rgba(74,231,206,${.2+.12*Math.sin(elapsed*4)})`;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y,24+4*Math.sin(elapsed*4),15+3*Math.sin(elapsed*4),0,0,TAU);ctx.stroke()}}
+function loop(now){let dt=Math.min((now-last)/1000||.016,.05);last=now;if(gameState!=='paused'&&gameState!=='menu'&&gameState!=='gameover')simulate(dt);drawScene();requestAnimationFrame(loop)}
+function setAim(evt){let rect=cvs.getBoundingClientRect();const x=evt.clientX-rect.left;targetPlayerX=clamp((x-W/2)/(W*.43),-.96,.96)}
+cvs.addEventListener('pointerdown',e=>{e.preventDefault();pointerDown=true;cvs.setPointerCapture(e.pointerId);setAim(e);if(gameState==='ready'&&serve==='you')launch('you',playerX,shotKind)});
+cvs.addEventListener('pointermove',e=>{if(pointerDown){e.preventDefault();setAim(e)}});
+cvs.addEventListener('pointerup',()=>pointerDown=false);cvs.addEventListener('pointercancel',()=>pointerDown=false);
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight',' ','a','d','A','D'].includes(e.key))e.preventDefault();if(['ArrowLeft','a','A'].includes(e.key))keyDir=-1;if(['ArrowRight','d','D'].includes(e.key))keyDir=1;if(e.key===' '&&gameState==='ready'&&serve==='you')launch('you',playerX,shotKind);if(e.key==='1')setShot('drive');if(e.key==='2')setShot('cut');if(e.key==='Escape'&&['ready','rally','point'].includes(gameState))pause()});window.addEventListener('keyup',e=>{if(['ArrowLeft','ArrowRight','a','d','A','D'].includes(e.key))keyDir=0});
+function setShot(kind){shotKind=kind;for(const [id,sel] of [['driveBtn',kind==='drive'],['cutBtn',kind==='cut']]){$(id).classList.toggle('selected',sel);$(id).setAttribute('aria-pressed',String(sel))}sound(kind==='drive'?650:330,.03,'sine',.045)}$('driveBtn').addEventListener('click',()=>setShot('drive'));$('cutBtn').addEventListener('click',()=>setShot('cut'));
+$('soundBtn').addEventListener('click',()=>{muted=!muted;$('soundBtn').textContent=muted?'♪̸':'♪';$('soundBtn').setAttribute('aria-label',muted?'音をオン':'音をオフ')});
+function pause(){if(!['ready','rally','point'].includes(gameState))return;wasPaused=gameState;gameState='paused';overlay.hidden=false;$('pauseBtn').textContent='▶';modal.innerHTML=`<div class="trophy">⏸</div><div class="eyebrow">BREAK TIME</div><h1>PAUSED</h1><p>試合を一時停止中です。</p><button class="primary" id="resumeBtn">試合にもどる　▶</button><button class="secondary" id="quitBtn">タイトルへ戻る</button>`;$('resumeBtn').addEventListener('click',resume);$('quitBtn').addEventListener('click',()=>showMenu())}
+function resume(){overlay.hidden=true;gameState=wasPaused;$('pauseBtn').textContent='Ⅱ'}
+$('pauseBtn').addEventListener('click',()=>{if(gameState==='paused')resume();else if(gameState==='menu'||gameState==='gameover'){}else pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&['ready','rally','point'].includes(gameState))pause()});
+resize();scoreText();showMenu();requestAnimationFrame(loop);
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+})();
+</script>
+</body>
+</html>
