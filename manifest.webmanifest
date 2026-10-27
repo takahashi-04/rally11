@@ -1,0 +1,23 @@
+{
+  "name": "RALLY 11 - FLICK ARENA 卓球",
+  "short_name": "RALLY 11",
+  "description": "フリック方向に打ち返す、木製ラケット風の打球音、ワイドな低角度コートの卓球ゲーム",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f8fc",
+  "theme_color": "#f4f8fc",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
